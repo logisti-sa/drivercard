@@ -252,9 +252,9 @@ body.preview-mode .preview-banner {
    المحاذاة يميناً داخل الحقل، وحافة الحقل اليمنى ثابتة عند x≈780/1292 = 60.4%
    (يسار النقطتين مباشرة) مهما تغيّر طول الرقم؛ والحقل يمتد إلى اليسار فقط. */
 #f-card-title {
-    top: 10.3%;
+    top: 12.9%;
     left: 40.4%;
-    right: 39.6%;  /* الحافة اليمنى للحقل = 60.4% من العرض */
+    right: 47.1%;  /* الحافة اليمنى للحقل = 60.4% من العرض */
     width: auto;
     height: 2.2%;
     padding: 0;
@@ -275,8 +275,8 @@ body.preview-mode .preview-banner {
     z-index: 3;
     display: block;
 }
-#f-card-en   { top: 27.2%; left: 25.7%; width: 28%; min-height: 2.1%; }
-#f-card-ar   { top: 27.2%; left: 50.1%; width: 28%; min-height: 2.1%; }
+#f-card-en   { top: 27.4%; left: 25.7%; width: 28%; min-height: 2.1%; }
+#f-card-ar   { top: 27.4%; left: 50.1%; width: 28%; min-height: 2.1%; }
 
 /* الاسمان متقابلان: الإنكليزي يسار والعربي يمين.
    السطر الأول يُنسّق برمجياً بفاصل حرفين، والسطر الثاني لا يلتف. */
@@ -316,8 +316,8 @@ body.preview-mode .preview-banner {
 #f-cat-ar    { top: 40.2%; left: 50.1%; width: 28%; height: 2.1%; }
 
 /* القسم 2 */
-#f-lic-en    { top: 54.05%; left: 25.7%; width: 26%; height: 2.1%; }
-#f-lic-ar    { top: 54.05%; left: 52.1%; width: 26%; height: 2.1%; }
+#f-lic-en    { top: 54.20%; left: 25.7%; width: 26%; height: 2.1%; }
+#f-lic-ar    { top: 54.20%; left: 52.1%; width: 26%; height: 2.1%; }
 
 #f-city-en   { top: 56.6%; left: 25.7%; width: 26%; height: 2.1%; }
 #f-city-ar   { top: 56.55%; left: 52.1%; width: 26%; height: 2.1%; }
