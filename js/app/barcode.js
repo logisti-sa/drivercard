@@ -2,14 +2,20 @@
  * استبدال الباركود الأصلي: توليد QR من رابط (QRious) أو رفع صورة محلية.
  */
 
-const barcodeOverlay = document.getElementById("barcodeOverlay");
-const barcodeCanvas = document.getElementById("barcodeCanvas");
-const barcodeImage = document.getElementById("barcodeImage");
-const barcodeActions = document.getElementById("barcodeActions");
-const barcodeImageInput = document.getElementById("barcodeImageInput");
-const barcodeLinkDialog = document.getElementById("barcodeLinkDialog");
-const barcodeLinkForm = document.getElementById("barcodeLinkForm");
-const barcodeLinkInput = document.getElementById("barcodeLinkInput");
+/* عناصر الباركود تُسترجع عند التهيئة (DOMContentLoaded) لضمان جهوزية DOM. */
+let barcodeOverlay, barcodeCanvas, barcodeImage, barcodeActions;
+let barcodeImageInput, barcodeLinkDialog, barcodeLinkForm, barcodeLinkInput;
+
+function cacheElements() {
+    barcodeOverlay = document.getElementById("barcodeOverlay");
+    barcodeCanvas = document.getElementById("barcodeCanvas");
+    barcodeImage = document.getElementById("barcodeImage");
+    barcodeActions = document.getElementById("barcodeActions");
+    barcodeImageInput = document.getElementById("barcodeImageInput");
+    barcodeLinkDialog = document.getElementById("barcodeLinkDialog");
+    barcodeLinkForm = document.getElementById("barcodeLinkForm");
+    barcodeLinkInput = document.getElementById("barcodeLinkInput");
+}
 
 function showBarcode(kind) {
     barcodeCanvas.hidden = kind !== "qr";
@@ -71,8 +77,9 @@ function onImageChosen() {
     reader.readAsDataURL(file);
 }
 
-/** ربط مستمعي أزرار الباركود. */
+/** استرجاع العناصر وربط مستمعي أزرار الباركود. */
 export function initBarcode() {
+    cacheElements();
     document.getElementById("pasteBarcodeLink").addEventListener("click", openLinkDialog);
     barcodeLinkForm.addEventListener("submit", onLinkSubmit);
     document.getElementById("cancelBarcodeLink").addEventListener("click", () => barcodeLinkDialog.close());
