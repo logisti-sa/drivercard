@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>from2 - بطاقة سائق</title>
     <link rel="stylesheet" href="css/card.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <!-- الاعتمادات الخارجية (CDN) — defer يضمن جهوزيتها قبل استخدام الأزرار -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 </head>
 <body>
     <div class="toolbar">
@@ -37,14 +38,8 @@
         تُحفظ المدخلات تلقائياً في المتصفح.
     </p>
 
-    <div id="sheet">
-        <!--
-          ============================================
-          صورة خلفية البطاقة — موجودة الآن في الملف الخارجي:
-          assets/background.png
-          لاستبدالها: ضع صورتك بنفس الاسم أو عدّل السطر أدناه.
-          ============================================
-        -->
+    <main id="sheet" aria-label="بطاقة السائق">
+        <!-- خلفية البطاقة: لاستبدالها ضع صورتك بنفس الاسم assets/background.png -->
         <img class="bg" alt="خلفية البطاقة" src="assets/background.png">
 
         <div class="fields" aria-label="حقول قابلة للتحرير">
@@ -63,8 +58,7 @@
             <div id="f-card-en" class="field en" data-sync="cardNo" contenteditable="true" role="textbox" aria-multiline="true">35.04115578</div>
             <div id="f-card-ar" class="field ar" data-sync="cardNo" contenteditable="true" role="textbox" aria-multiline="true">35.04115578</div>
 
-            <!-- الاسم -->
-            <!-- الاسم — نفس خصائص اسم المنشأة: يتمدد ويُصوَّر دون إزاحة PDF -->
+            <!-- الاسم: يتمدد مع الكتابة ويُصوَّر في موضعه دون إزاحة PDF -->
             <div id="f-name-en" class="field en" contenteditable="true" role="textbox" aria-multiline="true">MUHAMMAD AKHTAR MUHAMMAD ABID</div>
             <div id="f-name-ar" class="field ar" contenteditable="true" role="textbox" aria-multiline="true">محمد اختر محمد عبيد</div>
 
@@ -112,7 +106,7 @@
 Gypsum Decorations Establishment</div>
             <div id="f-co-ar" class="field ar" contenteditable="true" role="textbox" aria-multiline="true">مؤسسة ساره مناور سفر السحيمي للديكورات</div>
         </div>
-    </div>
+    </main>
 
 
     <script type="module" src="js/main.js"></script>
