@@ -1,0 +1,4 @@
+unzip project-backup.zip && cd driver-card
+git init && git add -A && git commit -m "Initial commit"
+git remote add origin https://github.com/newaccount/Driver-card.git
+git push -u origin main
