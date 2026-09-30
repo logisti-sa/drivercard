@@ -27,6 +27,29 @@ export function setFieldText(el, value) {
     else el.value = v;
 }
 
+/** إزالة علامات اتجاه اليونيكود الخفية من النص. */
+export function stripBidiMarks(value) {
+    return String(value == null ? "" : value).replace(/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, "");
+}
+
+/** هل النص يتكوّن من أرقام ورموز محايدة فقط (مثل رقم البطاقة/الهوية)؟ */
+export function isNumericValue(value) {
+    const s = stripBidiMarks(value).trim();
+    return s !== "" && /^[\d\s./:+-]+$/.test(s);
+}
+
+/**
+ * حقل "بطاقة رقم" العلوي: يُعرض دائماً بجانب النقطتين في الخلفية بنفس
+ * لون النص، لذا نعيد كتابته ببادئة RLM + مسافة غير فاصلة حتى لا ينفصل
+ * الرقم عن ":" أو يقفز إلى الجهة الأخرى عند المسح/اللصق.
+ */
+export function formatCardTitleField(el) {
+    if (!el) return;
+    const raw = stripBidiMarks(getFieldText(el)).replace(/^\u00A0+/, "");
+    const formatted = isNumericValue(raw) ? "\u200F\u00A0" + raw.trim() : raw;
+    if (getFieldText(el) !== formatted) setFieldText(el, formatted);
+}
+
 /** إزالة الأسطر الزائدة والمسافات المتكررة من الاسم. */
 export function normalizeName(value) {
     return String(value || "")
