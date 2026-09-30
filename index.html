@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>from2 - بطاقة سائق</title>
+    <link rel="stylesheet" href="css/card.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</head>
+<body>
+    <div class="toolbar">
+        <button type="button" id="downloadPdf">تحميل PDF</button>
+        <button type="button" id="previewPrint">معاينة الطباعة</button>
+        <button type="button" id="clearFields">مسح الحقول</button>
+        <button type="button" id="resetBarcode">إعادة تعيين الباركود</button>
+    </div>
+
+    <dialog id="barcodeLinkDialog" aria-labelledby="barcodeLinkTitle">
+        <form id="barcodeLinkForm">
+            <label id="barcodeLinkTitle" for="barcodeLinkInput">الصق الرابط المراد تحويله إلى باركود</label>
+            <input id="barcodeLinkInput" type="url" placeholder="https://example.com" required>
+            <div class="barcode-dialog-actions">
+                <button type="button" id="cancelBarcodeLink">إلغاء</button>
+                <button type="submit" id="createBarcodeLink">إنشاء الباركود</button>
+            </div>
+        </form>
+    </dialog>
+    <div class="preview-banner">
+        <span>معاينة الشكل النهائي — بلا خلفيات حقول</span>
+        <button type="button" id="exitPreview">إغلاق المعاينة</button>
+        <button type="button" id="downloadFromPreview">تحميل PDF</button>
+    </div>
+    <p class="hint">
+        صورة الخلفية تُحمَّل من الملف <code>assets/background.png</code> — لاستبدالها ضع صورتك بنفس الاسم.
+        الحقول قابلة للتحرير ومتزامنة للتكرارات، ثم اضغط تحميل PDF.
+        تُحفظ المدخلات تلقائياً في المتصفح.
+    </p>
+
+    <div id="sheet">
+        <!--
+          ============================================
+          صورة خلفية البطاقة — موجودة الآن في الملف الخارجي:
+          assets/background.png
+          لاستبدالها: ضع صورتك بنفس الاسم أو عدّل السطر أدناه.
+          ============================================
+        -->
+        <img class="bg" alt="خلفية البطاقة" src="assets/background.png">
+
+        <div class="fields" aria-label="حقول قابلة للتحرير">
+            <!-- الباركود: استبدل الباركود الأصلي برابط أو بصورة محلية -->
+            <div id="barcodeOverlay" aria-label="مربع الباركود">
+                <canvas id="barcodeCanvas" hidden></canvas>
+                <img id="barcodeImage" alt="الباركود المختار" hidden>
+                <div class="barcode-actions" id="barcodeActions">
+                    <button type="button" id="pasteBarcodeLink">الصق الرابط</button>
+                    <button type="button" id="chooseBarcodeImage">اختر صورة</button>
+                    <input type="file" id="barcodeImageInput" accept="image/*" hidden>
+                </div>
+            </div>
+            <!-- رقم البطاقة ×3 -->
+            <textarea id="f-card-title" class="field center" data-sync="cardNo" rows="1">35.04115578</textarea>
+            <div id="f-card-en" class="field en" data-sync="cardNo" contenteditable="true" role="textbox" aria-multiline="true">35.04115578</div>
+            <div id="f-card-ar" class="field ar" data-sync="cardNo" contenteditable="true" role="textbox" aria-multiline="true">35.04115578</div>
+
+            <!-- الاسم -->
+            <!-- الاسم — نفس خصائص اسم المنشأة: يتمدد ويُصوَّر دون إزاحة PDF -->
+            <div id="f-name-en" class="field en" contenteditable="true" role="textbox" aria-multiline="true">MUHAMMAD AKHTAR MUHAMMAD ABID</div>
+            <div id="f-name-ar" class="field ar" contenteditable="true" role="textbox" aria-multiline="true">محمد اختر محمد عبيد</div>
+
+            <!-- الهوية ×2 -->
+            <textarea id="f-id-en" class="field en" data-sync="driverId" rows="1">2567250671</textarea>
+            <textarea id="f-id-ar" class="field ar" data-sync="driverId" rows="1">2567250671</textarea>
+
+            <!-- تاريخ إصدار السائق ×2 -->
+            <textarea id="f-dissue-en" class="field en" data-sync="driverIssue" rows="1">2026-08-24</textarea>
+            <textarea id="f-dissue-ar" class="field ar" data-sync="driverIssue" rows="1">2026-08-24</textarea>
+
+            <!-- تاريخ انتهاء السائق ×2 -->
+            <textarea id="f-dexp-en" class="field en" data-sync="driverExpiry" rows="1">2027-08-24</textarea>
+            <textarea id="f-dexp-ar" class="field ar" data-sync="driverExpiry" rows="1">2027-08-24</textarea>
+
+            <!-- التصنيف -->
+            <textarea id="f-cat-en" class="field en" rows="1">year</textarea>
+            <textarea id="f-cat-ar" class="field ar" rows="1">سنوية</textarea>
+
+            <!-- رقم الترخيص ×2 -->
+            <textarea id="f-lic-en" class="field en" data-sync="licenseNo" rows="1">35/00000421</textarea>
+            <textarea id="f-lic-ar" class="field ar" data-sync="licenseNo" rows="1">35/00000421</textarea>
+
+            <!-- المدينة -->
+            <textarea id="f-city-en" class="field en" rows="1">Maka</textarea>
+            <textarea id="f-city-ar" class="field ar" rows="1">مكة</textarea>
+
+            <!-- تواريخ الترخيص ×2 لكل -->
+            <textarea id="f-lissue-en" class="field en" data-sync="licenseIssue" rows="1">2022-03-02</textarea>
+            <textarea id="f-lissue-ar" class="field ar" data-sync="licenseIssue" rows="1">2022-03-02</textarea>
+
+            <textarea id="f-lexp-en" class="field en" data-sync="licenseExpiry" rows="1">2028-01-30</textarea>
+            <textarea id="f-lexp-ar" class="field ar" data-sync="licenseExpiry" rows="1">2028-01-30</textarea>
+
+            <!-- النشاط -->
+            <textarea id="f-act-en" class="field en" rows="1">Specialized Transport</textarea>
+            <textarea id="f-act-ar" class="field ar" rows="1">النقل المتخصص</textarea>
+
+            <!-- رقم المنشأة (مختلفان) -->
+            <textarea id="f-moi-en" class="field en" rows="1">7001964399</textarea>
+            <textarea id="f-moi-ar" class="field ar" rows="1">7050889190</textarea>
+
+            <!-- اسم المنشأة — يتمدد مع الكتابة ويُصوَّر في موضعه دون إزاحة PDF -->
+            <div id="f-co-en" class="field en" contenteditable="true" role="textbox" aria-multiline="true">Sarah Manawer Safar Al-Suhaim
+Gypsum Decorations Establishment</div>
+            <div id="f-co-ar" class="field ar" contenteditable="true" role="textbox" aria-multiline="true">مؤسسة ساره مناور سفر السحيمي للديكورات</div>
+        </div>
+    </div>
+
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
