@@ -1,0 +1,393 @@
+:root {
+    --value-color: #1a1a1a;
+    --value-size: 13.5px;
+    --value-weight: 700;
+    --font: Arial, "Segoe UI", Tahoma, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #2c3e50;
+    font-family: var(--font);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 12px 40px;
+    gap: 14px;
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    width: min(860px, 100%);
+}
+
+.toolbar button {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 22px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+#downloadPdf {
+    background: linear-gradient(135deg, #8f3a42, #5c2228);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(92, 34, 40, .35);
+}
+
+#previewPrint {
+    background: linear-gradient(135deg, #3a6b8f, #22485c);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(34, 72, 92, .35);
+}
+
+#clearFields {
+    background: #fff;
+    color: #222;
+}
+
+#resetBarcode {
+    background: #e8eef4;
+    color: #263f54;
+}
+
+#barcodeLinkDialog {
+    width: min(420px, calc(100% - 32px));
+    border: 0;
+    border-radius: 12px;
+    padding: 20px;
+    color: #202a33;
+    font-family: var(--font);
+    box-shadow: 0 18px 50px rgba(0, 0, 0, .35);
+}
+#barcodeLinkDialog::backdrop { background: rgba(0, 0, 0, .48); }
+#barcodeLinkForm { display: grid; gap: 14px; }
+#barcodeLinkInput {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #b8c3ce;
+    border-radius: 6px;
+    direction: ltr;
+    text-align: left;
+    font: 14px var(--font);
+}
+.barcode-dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.barcode-dialog-actions button {
+    border: 0;
+    border-radius: 6px;
+    padding: 9px 14px;
+    cursor: pointer;
+    font: 700 13px var(--font);
+}
+#createBarcodeLink { background: #8f3a42; color: #fff; }
+#cancelBarcodeLink { background: #e8eef4; color: #263f54; }
+
+.hint {
+    color: #dce6ef;
+    font-size: 12px;
+    text-align: center;
+    max-width: 720px;
+    line-height: 1.7;
+}
+
+.hint code {
+    background: rgba(255,255,255,.12);
+    padding: 2px 6px;
+    border-radius: 4px;
+    direction: ltr;
+    display: inline-block;
+}
+
+/* إطار البطاقة بنفس نسبة الصورة الأصلية */
+#sheet {
+    width: min(860px, 100%);
+    position: relative;
+    background: #f0f0f0;
+    box-shadow: 0 12px 36px rgba(0,0,0,.45);
+    border-radius: 6px;
+    overflow: hidden;
+    direction: ltr;
+    /* نسبة الصورة الأصلية 1292×1827 — تثبت المواضع قبل/بعد لصق base64 */
+    aspect-ratio: 1292 / 1827;
+}
+
+#sheet .bg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    position: absolute;
+    inset: 0;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* طبقة الحقول فوق الصورة */
+.fields {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+}
+
+.field {
+    position: absolute;
+    margin: 0;
+    padding: 0 4px;
+    border: 1px dashed transparent;
+    border-radius: 3px;
+    background: #f7f6f7;
+    color: var(--value-color);
+    font-size: var(--value-size);
+    font-weight: var(--value-weight);
+    font-family: var(--font);
+    line-height: 1.35;
+    outline: none;
+    overflow: hidden;
+    resize: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    box-shadow: none;
+}
+
+.field:hover,
+.field:focus {
+    border-color: #c9a0a4;
+    background: #fff;
+    z-index: 5;
+}
+
+/* ثبت اتجاه كل حقل نفسه؛ unicode-bidi يمنع انقلاب حروف العربية
+   عندما يحتوي الحقل على أرقام أو نصاً عربياً/إنجليزياً مختلطاً. */
+.field.en {
+    direction: ltr;
+    unicode-bidi: plaintext;
+    text-align: left;
+}
+.field.ar {
+    direction: rtl !important;
+    unicode-bidi: plaintext;
+    text-align: right;
+}
+.field.center {
+    direction: ltr;
+    text-align: center;
+    background: #fff;
+    color: #7a5a5e;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* وضع الطباعة / المعاينة: نص فقط بلا خلفيات أو حدود */
+body.pdf-capture .field,
+body.pdf-capture .field:hover,
+body.pdf-capture .field:focus,
+body.preview-mode .field,
+body.preview-mode .field:hover,
+body.preview-mode .field:focus {
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    -webkit-box-shadow: none !important;
+    caret-color: transparent;
+}
+
+body.preview-mode .toolbar,
+body.preview-mode .hint {
+    display: none !important;
+}
+
+body.preview-mode {
+    background: #1a1a1a;
+    padding: 24px 12px 40px;
+}
+
+.preview-banner {
+    display: none;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: min(860px, 100%);
+}
+
+body.preview-mode .preview-banner {
+    display: flex;
+}
+
+.preview-banner button {
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    background: #fff;
+    color: #222;
+}
+
+/* —— مواضع الحقول (نِسب مئوية من عرض/ارتفاع البطاقة) —— */
+
+/* رقم البطاقة تحت العنوان (التكرار الثالث) */
+#f-card-title {
+    top: 14.6%;
+    left: 38%;
+    width: 24%;
+    height: 2.2%;
+}
+
+/* القسم 1 — حقول تتمدد مع الكتابة + تقارب سطور أقصى بدون تداخل */
+#f-card-en,
+#f-card-ar,
+#f-name-en,
+#f-name-ar,
+#f-co-en,
+#f-co-ar {
+    line-height: 1;
+    padding-top: 0;
+    padding-bottom: 0;
+    height: auto;
+    overflow: visible;
+    z-index: 3;
+    display: block;
+}
+#f-card-en   { top: 27.2%; left: 25.7%; width: 28%; min-height: 2.1%; }
+#f-card-ar   { top: 27.2%; left: 50.1%; width: 28%; min-height: 2.1%; }
+
+/* الاسمان متقابلان: الإنكليزي يسار والعربي يمين.
+   السطر الأول يُنسّق برمجياً بفاصل حرفين، والسطر الثاني لا يلتف. */
+#f-name-en {
+    top: 29.9%;
+    left: 25.7%;
+    width: 40ch;
+    height: 2em;
+    min-height: 0;
+    overflow: hidden;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+}
+#f-name-ar {
+    top: 29.9%;
+    left: calc(78.1% - 40ch);
+    width: 40ch;
+    height: 2em;
+    min-height: 0;
+    overflow: hidden;
+    white-space: pre;
+    word-break: normal;
+    overflow-wrap: normal;
+}
+
+#f-id-en     { top: 32.5%; left: 25.7%; width: 28%; height: 2.1%; }
+#f-id-ar     { top: 32.5%; left: 50.1%; width: 28%; height: 2.1%; }
+
+#f-dissue-en { top: 35.0%; left: 25.7%; width: 28%; height: 2.1%; }
+#f-dissue-ar { top: 35.0%; left: 50.1%; width: 28%; height: 2.1%; }
+
+#f-dexp-en   { top: 37.6%; left: 25.7%; width: 28%; height: 2.1%; }
+#f-dexp-ar   { top: 37.6%; left: 50.1%; width: 28%; height: 2.1%; }
+
+#f-cat-en    { top: 40.2%; left: 25.7%; width: 28%; height: 2.1%; }
+#f-cat-ar    { top: 40.2%; left: 50.1%; width: 28%; height: 2.1%; }
+
+/* القسم 2 */
+#f-lic-en    { top: 54.05%; left: 25.7%; width: 26%; height: 2.1%; }
+#f-lic-ar    { top: 54.05%; left: 52.1%; width: 26%; height: 2.1%; }
+
+#f-city-en   { top: 56.6%; left: 25.7%; width: 26%; height: 2.1%; }
+#f-city-ar   { top: 56.55%; left: 52.1%; width: 26%; height: 2.1%; }
+
+#f-lissue-en { top: 58.90%; left: 25.7%; width: 26%; height: 2.1%; }
+#f-lissue-ar { top: 58.90%; left: 52.1%; width: 26%; height: 2.1%; }
+
+#f-lexp-en   { top: 61.2%; left: 25.7%; width: 26%; height: 2.1%; }
+#f-lexp-ar   { top: 61.2%; left: 52.1%; width: 26%; height: 2.1%; }
+
+#f-act-en    { top: 64.1%; left: 25.7%; width: 26%; height: 2.4%; }
+#f-act-ar    { top: 64.1%; left: 52.1%; width: 26%; height: 2.4%; }
+
+#f-moi-en    { top: 67.4%; left: 25.7%; width: 26%; height: 2.1%; }
+#f-moi-ar    { top: 67.4%; left: 52.1%; width: 26%; height: 2.1%; }
+
+#f-co-en     { top: 70.4%; left: 25.7%; width: 26%; min-height: 5.2%; }
+#f-co-ar     { top: 70.4%; left: 52.1%; width: 26%; min-height: 5.2%; }
+
+/* طبقة الباركود: فوق الباركود الأصلي وبالمقاس نفسه. */
+#barcodeOverlay {
+    position: absolute;
+    top: 7.2%;
+    left: 10.2%;
+    width: 13.1%;
+    height: 9.1%;
+    z-index: 4;
+    background: #fff;
+    border: 1px solid rgba(38, 63, 84, .28);
+    overflow: hidden;
+}
+
+#barcodeCanvas,
+#barcodeImage {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+}
+
+#barcodeCanvas[hidden],
+#barcodeImage[hidden] { display: none; }
+
+.barcode-actions {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5%;
+    padding: 8%;
+    background: rgba(255, 255, 255, .94);
+}
+.barcode-actions[hidden] { display: none; }
+
+.barcode-actions button {
+    width: 100%;
+    min-height: 0;
+    border: 0;
+    border-radius: 4px;
+    padding: 6% 3%;
+    background: #8f3a42;
+    color: #fff;
+    font: 700 clamp(7px, 1vw, 12px) var(--font);
+    cursor: pointer;
+}
+
+body.pdf-capture .barcode-actions,
+body.preview-mode .barcode-actions { display: none; }
+body.pdf-capture #barcodeOverlay:not(.has-barcode),
+body.preview-mode #barcodeOverlay:not(.has-barcode) { display: none; }
+
+@media print {
+    body { background: #fff; padding: 0; }
+    .toolbar, .hint, .preview-banner { display: none !important; }
+    #sheet { box-shadow: none; width: 100%; max-width: none; }
+    .field,
+    .field:hover,
+    .field:focus {
+        background: transparent !important;
+        border-color: transparent !important;
+        box-shadow: none !important;
+    }
+}

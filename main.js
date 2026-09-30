@@ -1,0 +1,25 @@
+/**
+ * نقطة الدخول الرئيسية لتطبيق بطاقة السائق.
+ * يجمع الوحدات: الحقول، التخزين، الباركود، PDF، المعاينة.
+ */
+import { saveFields, loadSavedFields, clearAllFields } from "./modules/storage.js";
+import { initFieldSync, formatNameFields } from "./modules/fields-sync.js";
+import { initBarcode } from "./modules/barcode.js";
+import { bindPdfButton } from "./modules/pdf.js";
+import { initPreview } from "./modules/preview.js";
+
+/* استعادة القيم المحفوظة، ثم تطبيق تقسيم الاسم على القيم الافتراضية أيضاً. */
+loadSavedFields();
+formatNameFields();
+
+/* مزامنة الحقول + الحفظ التلقائي بعد كل تعديل. */
+initFieldSync(saveFields);
+
+/* زر مسح الحقول. */
+document.getElementById("clearFields").addEventListener("click", clearAllFields);
+
+/* الباركود ومعاينة الطباعة وأزرار PDF (الشريط الرئيسي وشريط المعاينة). */
+initBarcode();
+initPreview();
+bindPdfButton("downloadPdf");
+bindPdfButton("downloadFromPreview");
