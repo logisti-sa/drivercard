@@ -177,13 +177,20 @@ body {
     unicode-bidi: plaintext;
     text-align: right;
 }
+/* رقم البطاقة أعلى البطاقة: يظهر مباشرة بعد "بطاقة رقم :" في الخلفية
+   (الفاصل = مسافة غير قابلة للفصل حتى لا ينفصل الرقم عن النقطتين). */
 .field.center {
-    direction: ltr;
-    text-align: center;
-    background: #fff;
-    color: #7a5a5e;
-    font-weight: 600;
-    font-size: 14px;
+    direction: rtl;
+    unicode-bidi: plaintext;
+    text-align: right;
+    background: transparent;
+    color: var(--value-color);
+    font-weight: var(--value-weight);
+    font-size: 15px;
+}
+
+body:not(.pdf-capture):not(.preview-mode) .field.center::before {
+    content: "\00A0"; /* شبح بمقاس مسافة لضبط المحاذاة فقط — لا يُطبع */
 }
 
 /* وضع الطباعة / المعاينة: نص فقط بلا خلفيات أو حدود */
@@ -241,12 +248,16 @@ body.preview-mode .preview-banner {
 
 /* —— مواضع الحقول (نِسب مئوية من عرض/ارتفاع البطاقة) —— */
 
-/* رقم البطاقة تحت العنوان (التكرار الثالث) */
+/* رقم البطاقة بجانب عبارة "بطاقة رقم :" في الخلفية — يُحاذى بحافة النقطتين.
+   المحاذاة يميناً داخل الحقل، وحافة الحقل اليمنى ثابتة عند x≈780/1292 = 60.4%
+   (يسار النقطتين مباشرة) مهما تغيّر طول الرقم؛ والحقل يمتد إلى اليسار فقط. */
 #f-card-title {
-    top: 14.6%;
-    left: 38%;
-    width: 24%;
+    top: 10.3%;
+    left: 40.4%;
+    right: 39.6%;  /* الحافة اليمنى للحقل = 60.4% من العرض */
+    width: auto;
     height: 2.2%;
+    padding: 0;
 }
 
 /* القسم 1 — حقول تتمدد مع الكتابة + تقارب سطور أقصى بدون تداخل */

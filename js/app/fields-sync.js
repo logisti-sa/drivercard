@@ -11,9 +11,11 @@ import {
     normalizeName,
     characterCount,
     takeWholeWords,
+    formatCardTitleField,
 } from "../utils/text.js";
 
 const syncing = new Set();
+const CARD_TITLE_ID = "f-card-title";
 
 /**
  * تقسيم الاسم الطويل على سطرين مع الحفاظ على السطر الأول للاسم الأقصر.
@@ -69,6 +71,8 @@ export function initFieldSync(onSave) {
             document.querySelectorAll('[data-sync="' + key + '"]').forEach((peer) => {
                 if (peer !== el) setFieldText(peer, value);
             });
+            /* الرقم يتطابق مع النسخ المكررة، لكن الحقل العلوي يحتاج بادئته الخاصة. */
+            formatCardTitleField(document.getElementById(CARD_TITLE_ID));
             syncing.delete(key);
             onSave();
         });
