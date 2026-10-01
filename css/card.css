@@ -391,3 +391,139 @@ body.preview-mode #barcodeOverlay:not(.has-barcode) { display: none; }
         box-shadow: none !important;
     }
 }
+
+/* ================= معالج إدخال البيانات (Wizard) ================= */
+.wizard-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.62);
+    backdrop-filter: blur(3px);
+}
+.wizard-overlay[hidden] { display: none; }
+.wizard-panel {
+    width: min(560px, calc(100vw - 32px));
+    max-height: calc(100vh - 48px);
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+}
+.wizard-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #0f4c81, #1b6db4);
+    color: #fff;
+}
+.wizard-head h2 { margin: 0; font-size: 18px; font-weight: 700; flex: 1; }
+.wizard-progress { font-size: 12px; opacity: 0.85; white-space: nowrap; }
+.wizard-close {
+    border: 0;
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+.wizard-close:hover { background: rgba(255, 255, 255, 0.3); }
+.wizard-body { padding: 18px; overflow-y: auto; }
+.wizard-error {
+    margin: 0 18px;
+    min-height: 18px;
+    color: #b42318;
+    font-size: 13px;
+    font-weight: 600;
+}
+.wizard-foot {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 18px;
+    border-top: 1px solid #e5e9ef;
+    background: #f8fafc;
+}
+.wizard-foot .primary {
+    background: #0f4c81;
+    color: #fff;
+    border: 0;
+    padding: 10px 26px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.wizard-foot .primary:disabled { opacity: 0.55; cursor: progress; }
+.wizard-foot .ghost {
+    background: #eef2f6;
+    color: #334155;
+    border: 1px solid #d5dde6;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+}
+.wlabel { font-size: 14px; color: #334155; margin-bottom: 10px; line-height: 1.7; }
+.wrow input {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 17px;
+    padding: 12px 14px;
+    border: 2px solid #cbd5e1;
+    border-radius: 10px;
+    background: #fff;
+    color: #0f172a;
+}
+.wrow input:focus { outline: none; border-color: #0f4c81; }
+.whint { font-size: 12px; color: #64748b; margin: 8px 2px 0; }
+.wbtnrow { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.wbtnrow button.primary {
+    background: #0f4c81; color: #fff; border: 0;
+    padding: 10px 20px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer;
+}
+.wbtnrow button.primary:disabled { opacity: 0.5; }
+.wbtnrow button.ghost {
+    background: #eef2f6; color: #334155; border: 1px solid #d5dde6;
+    padding: 10px 20px; border-radius: 10px; font-size: 15px; cursor: pointer;
+}
+.wcardsuggest {
+    text-align: center;
+    margin: 14px 0;
+    padding: 14px;
+    background: #f1f6fb;
+    border: 2px dashed #0f4c81;
+    border-radius: 12px;
+}
+.wcardsuggest span {
+    font-family: "Courier New", monospace;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #0f4c81;
+}
+.woptions { display: flex; flex-direction: column; gap: 10px; }
+.woptions label {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 16px; padding: 10px 14px;
+    background: #f8fafc; border: 1px solid #dbe3ec; border-radius: 10px; cursor: pointer;
+}
+.istighfar-box { text-align: center; padding: 26px 10px; }
+.istighfar-spinner {
+    width: 42px; height: 42px; margin: 0 auto 16px;
+    border: 4px solid #dbe3ec; border-top-color: #0f4c81;
+    border-radius: 50%;
+    animation: wiz-spin 0.9s linear infinite;
+}
+@keyframes wiz-spin { to { transform: rotate(360deg); } }
+.istighfar-text { font-size: 20px; font-weight: 700; color: #0f4c81; margin: 0 0 6px; }
+.istighfar-sub { font-size: 13px; color: #64748b; margin: 0; }
+.toolbar .wizard-launch { background: #0f4c81 !important; color: #fff !important; font-weight: 700; }
