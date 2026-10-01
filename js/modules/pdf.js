@@ -19,6 +19,29 @@ export function buildPdfFilename() {
     return sanitizeFilePart(name) + "_" + sanitizeFilePart(card) + ".pdf";
 }
 
+/** تاريخ ISO → "يوم-شهر-سنة" للجهة العربية و"سنة-شهر-يوم" للجهة الإنكليزية. */
+function formatDateForSide(iso, side) {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso).trim());
+    if (!m) return iso;
+    const [, y, mo, d] = m;
+    return side === "ar" ? d + "-" + mo + "-" + y : y + "-" + mo + "-" + d;
+}
+
+const DATE_SYNC_KEYS = ["driverIssue", "driverExpiry", "licenseIssue", "licenseExpiry"];
+
+/** داخل نسخة الالتقاط: عرض كل تاريخ بالاتجاه الخاص بجهته (القيمة canon تبقى ISO). */
+function applyDateDirections(clonedDoc) {
+    DATE_SYNC_KEYS.forEach((key) => {
+        clonedDoc.querySelectorAll('[data-sync="' + key + '"]').forEach((el) => {
+            const side = el.classList.contains("ar") ? "ar" : "en";
+            const raw = el.value != null ? el.value : el.innerText;
+            const formatted = formatDateForSide(raw, side);
+            if (el.value != null) el.value = formatted;
+            else el.innerText = formatted;
+        });
+    });
+}
+
 /** وضع التصوير: إخفاء خلفيات الحقول وعناصر الواجهة. */
 function setCaptureChrome(on) {
     document.body.classList.toggle("pdf-capture", !!on);
@@ -38,8 +61,8 @@ function clearFieldChrome(el) {
     el.style.caretColor = "transparent";
 }
 
-/** توليد ملف PDF وتنزيله. */
-export async function generatePdf() {
+/** توليد ملف PDF وتنزيله. يُستخدم رقم البطاقة اسماً للملف عند تمريره من المعالج. */
+export async function generatePdf(cardName) {
     if (typeof html2pdf === "undefined") {
         alert("تعذر تحميل محرك PDF. تحقق من الاتصال بالإنترنت.");
         return;
@@ -51,7 +74,7 @@ export async function generatePdf() {
 
     const opt = {
         margin: [4, 4, 4, 4],
-        filename: buildPdfFilename(),
+        filename: cardName ? sanitizeFilePart(cardName) + ".pdf" : buildPdfFilename(),
         image: { type: "jpeg", quality: 0.98 },
         html2canvas: {
             scale: 3,
@@ -63,6 +86,9 @@ export async function generatePdf() {
             imageTimeout: 15000,
             onclone: function (clonedDoc) {
                 clonedDoc.body.classList.add("pdf-capture");
+
+                /* التواريخ تُطبع باتجاهين مختلفين لنفس القيمة المخزنة */
+                applyDateDirections(clonedDoc);
 
                 /* شفافية لكل الحقول دون تغيير مواضعها */
                 clonedDoc.querySelectorAll(".field").forEach(clearFieldChrome);

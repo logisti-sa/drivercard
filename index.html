@@ -10,6 +10,7 @@
 </head>
 <body>
     <div class="toolbar">
+        <button type="button" id="startWizard" class="wizard-launch">بدء إدخال البيانات</button>
         <button type="button" id="downloadPdf">تحميل PDF</button>
         <button type="button" id="previewPrint">معاينة الطباعة</button>
         <button type="button" id="clearFields">مسح الحقول</button>
@@ -32,9 +33,9 @@
         <button type="button" id="downloadFromPreview">تحميل PDF</button>
     </div>
     <p class="hint">
-        صورة الخلفية تُحمَّل من الملف <code>assets/background.png</code> — لاستبدالها ضع صورتك بنفس الاسم.
-        الحقول قابلة للتحرير ومتزامنة للتكرارات، ثم اضغط تحميل PDF.
-        تُحفظ المدخلات تلقائياً في المتصفح.
+        اضغط «بدء إدخال البيانات» لفتح نافذة الخطوات: رقم البطاقة (عشوائي أو معدَّل)، الأسماء مع الترجمة التلقائية،
+        التواريخ بالاتجاهين، والباركود — ثم يُولَّد PDF باسم رقم البطاقة.
+        الحقول خلف النافذة تبقى قابلة للتعديل اليدوي، وتُحفظ المدخلات تلقائياً في المتصفح.
     </p>
 
     <div id="sheet">
@@ -114,6 +115,23 @@ Gypsum Decorations Establishment</div>
         </div>
     </div>
 
+
+    <!-- نافذة معالج إدخال البيانات -->
+    <div id="wizardOverlay" class="wizard-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="wizardTitle">
+        <div class="wizard-panel">
+            <header class="wizard-head">
+                <h2 id="wizardTitle">إدخال بيانات البطاقة</h2>
+                <span id="wizardProgress" class="wizard-progress"></span>
+                <button type="button" id="closeWizard" class="wizard-close" title="إغلاق">×</button>
+            </header>
+            <div id="wizardBody" class="wizard-body"></div>
+            <p id="wizardError" class="wizard-error" role="alert"></p>
+            <footer class="wizard-foot">
+                <button type="button" id="wizardBack" class="ghost">رجوع</button>
+                <button type="button" id="wizardNext" class="primary">التالي</button>
+            </footer>
+        </div>
+    </div>
 
     <script type="module" src="js/main.js"></script>
 </body>
